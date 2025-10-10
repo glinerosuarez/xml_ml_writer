@@ -22,7 +22,7 @@ public class XmlWriter {
 
     public XmlWriter(String host, int port, String user, String password, String database) {
         this.client = DatabaseClientFactory.newClient(
-                host, port, user, password, Authentication.DIGEST
+                host, port, database, user, password, Authentication.DIGEST // Pass database as 3rd parameter
         );
         this.moveMgr = client.newDataMovementManager();
         
@@ -31,7 +31,7 @@ public class XmlWriter {
                 .withBatchSize(1)
                 .withThreadCount(1)
                 .onBatchSuccess(batch-> {
-                    baatchRetries.remove(batch.getJobRecordNumber());
+                    batchRetries.remove(batch.getJobRecordNumber());
                     System.out.println("Batch Success: " + batch.getJobWritesSoFar() + " documents written at " + batch.getTimestamp());
                     // TODO: we need to send a signal to the main thread so it can register this batch as completed
                 })
@@ -53,7 +53,7 @@ public class XmlWriter {
                         System.err.println("Batch failed after" + MAX_RETRIES + " attempts: " + throwable.getMessage());
                         // TODO: should we throw an exception here to stop the job?
                     }
-                });;
+                });
     }
 
     /**

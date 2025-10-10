@@ -41,15 +41,16 @@ public class App {
                 .forEach(path -> {
                     try {
                         String content = Files.readString(path);
-                        String uri = "/ingest/" + path.getFileName().toString();
+                        String fileName = path.getFileName().toString();
+                        String baseName = fileName.substring(0, fileName.lastIndexOf('.'));
+                        String uri = baseName.replace('_', '/');
                         xmlDocs.put(uri, content);
                     } catch (IOException e) {
                         System.err.println("Failed to read file: " + path + " - " + e.getMessage());
                     }
                 });
-
-            writer.pushXmlDocuments(xmlDocs);
             writer.startJob();
+            writer.pushXmlDocuments(xmlDocs);
         } catch (IOException e) {
             System.err.println("Error reading XML files: " + e.getMessage());
         } finally {
