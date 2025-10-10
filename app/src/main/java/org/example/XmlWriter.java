@@ -5,7 +5,7 @@ import com.marklogic.client.DatabaseClientFactory;
 import com.marklogic.client.datamovement.DataMovementManager;
 import com.marklogic.client.datamovement.WriteBatcher;
 import com.marklogic.client.io.StringHandle;
-import com.marklogic.client.DatabaseClientFactory.Authentication;
+import com.marklogic.client.DatabaseClientFactory.DigestAuthContext;
 
 import java.util.List;
 import java.util.Map;
@@ -18,11 +18,11 @@ public class XmlWriter {
     private final DataMovementManager moveMgr;
     private final WriteBatcher batcher;
     // data structure to store the number of retries executed for each batch
-    private final Map<Integer, Integer> batchRetries;
+    private final Map<Long, Integer> batchRetries;
 
     public XmlWriter(String host, int port, String user, String password, String database) {
         this.client = DatabaseClientFactory.newClient(
-                host, port, user, password, Authentication.DIGEST
+            host, port, database, new DigestAuthContext(user, password)
         );
         this.moveMgr = client.newDataMovementManager();
         
@@ -31,13 +31,13 @@ public class XmlWriter {
                 .withBatchSize(1)
                 .withThreadCount(1)
                 .onBatchSuccess(batch-> {
-                    baatchRetries.remove(batch.getJobRecordNumber());
+                    batchRetries.remove(batch.getJobBatchNumber());
                     System.out.println("Batch Success: " + batch.getJobWritesSoFar() + " documents written at " + batch.getTimestamp());
                     // TODO: we need to send a signal to the main thread so it can register this batch as completed
                 })
                 .onBatchFailure((batch, throwable) -> {
-                    if (batchRetries.get(batch.getJobRecordNumber()) < MAX_RETRIES) {
-                        int retries = batchRetries.getOrDefault(batch.getJobRecordNumber(), 0) + 1;
+                    if (batchRetries.get(batch.getJobBatchNumber()) < MAX_RETRIES) {
+                        int retries = batchRetries.getOrDefault(batch.getJobBatchNumber(), 0) + 1;
                         
                         // add waiting time before retrying
                         try {
@@ -46,14 +46,14 @@ public class XmlWriter {
                             Thread.currentThread().interrupt();
                         }
 
-                        System.err.println("Retrying batch with id " + batch.getJobRecordNumber() + " with " + batch.getItems().size() + " items");
-                        batchRetries.put(batch.getJobRecordNumber(), retries);
-                        batch.retryWithFailureListeners(batch);
+                        System.err.println("Retrying batch with id " + batch.getJobBatchNumber() + " with " + batch.getItems().length + " items");
+                        batchRetries.put(batch.getJobBatchNumber(), retries);
+                        batch.getBatcher().retryWithFailureListeners(batch);
                     } else {
                         System.err.println("Batch failed after" + MAX_RETRIES + " attempts: " + throwable.getMessage());
                         // TODO: should we throw an exception here to stop the job?
                     }
-                });;
+                });
     }
 
     /**
