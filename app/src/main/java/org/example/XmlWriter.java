@@ -1,4 +1,4 @@
-package main.java.ingestion;
+package org.example;
 
 import com.marklogic.client.DatabaseClient;
 import com.marklogic.client.DatabaseClientFactory;
@@ -7,7 +7,6 @@ import com.marklogic.client.datamovement.WriteBatcher;
 import com.marklogic.client.io.StringHandle;
 import com.marklogic.client.DatabaseClientFactory.DigestAuthContext;
 
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
