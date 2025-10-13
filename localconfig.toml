@@ -1,0 +1,6 @@
+[marklogic]
+    host = "localhost"
+    port = 8000
+    user = "test_user"
+    password = "test"
+    
