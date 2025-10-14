@@ -18,6 +18,7 @@ locals {
 variable "admin_password" {
   type        = string
   description = "MarkLogic admin password"
+  default     = "admin"
   sensitive   = true
 }
 
@@ -35,7 +36,7 @@ resource "docker_container" "marklogic" {
   image = docker_image.marklogic.image_id
 
   env = [
-    "MARKLOGIC_ADMIN_USER=admin",
+    "MARKLOGIC_ADMIN_USERNAME=admin",
     "MARKLOGIC_ADMIN_PASSWORD=${var.admin_password}",
     "MARKLOGIC_INIT=true"
   ]
