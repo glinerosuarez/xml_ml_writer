@@ -73,10 +73,11 @@ resource "null_resource" "marklogic_protein_db" {
   }
 
   provisioner "local-exec" {
+    interpreter = ["/bin/bash", "-c"]
     command = <<-EOT
       set -euo pipefail
 
-  STATUS=$(curl --silent --output /dev/null --write-out "%%{http_code}" --digest -u admin:${var.admin_password} http://localhost:8002/manage/v2/databases/protein)
+      STATUS=$(curl --silent --output /dev/null --write-out "%%{http_code}" --digest -u admin:${var.admin_password} http://localhost:8002/manage/v2/databases/protein)
 
       if [ "$STATUS" -eq 200 ]; then
         echo "Database protein already exists; skipping creation."
