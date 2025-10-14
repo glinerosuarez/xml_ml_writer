@@ -83,21 +83,29 @@ resource "null_resource" "marklogic_protein_db" {
         sleep 5
       done
 
-      STATUS=$(curl --silent --output /dev/null --write-out "%%{http_code}" \
-        --digest -u admin:${var.admin_password} \
-        http://localhost:8002/manage/v2/databases/protein?format=json || true)
-
-      if [[ "$STATUS" == "200" ]]; then
+      if curl --silent --digest -u admin:${var.admin_password} \
+        http://localhost:8002/manage/v2/databases/protein?format=json >/dev/null 2>&1; then
         echo "Database protein already exists; skipping creation."
       else
         echo "Creating MarkLogic database 'protein'..."
-        curl --silent --show-error --digest -u admin:${var.admin_password} \
+        RESPONSE=$(curl --silent --show-error --write-out 'HTTPSTATUS:%%{http_code}' \
+          --digest -u admin:${var.admin_password} \
           -H "Content-Type: application/json" \
           -H "Accept: application/json" \
           -X POST \
           -d '{"database-name":"protein","forests":[{"forest-name":"protein-1"}]}' \
-          http://localhost:8002/manage/v2/databases
-        echo
+          http://localhost:8002/manage/v2/databases)
+
+        HTTP_STATUS=$(echo "$RESPONSE" | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
+        BODY=$(echo "$RESPONSE" | sed -e 's/HTTPSTATUS:.*//')
+
+        if [[ "$HTTP_STATUS" != "202" ]]; then
+          echo "Failed to create database. HTTP status: $HTTP_STATUS"
+          echo "$BODY"
+          exit 1
+        fi
+
+        echo "MarkLogic database 'protein' creation request accepted."
       fi
     EOT
   }
