@@ -63,3 +63,31 @@ resource "docker_container" "marklogic" {
     retries  = 10
   }
 }
+
+resource "null_resource" "marklogic_protein_db" {
+  depends_on = [docker_container.marklogic]
+
+  triggers = {
+    database_name = "protein"
+    admin_password = var.admin_password
+  }
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      set -euo pipefail
+
+  STATUS=$(curl --silent --output /dev/null --write-out "%%{http_code}" --digest -u admin:${var.admin_password} http://localhost:8002/manage/v2/databases/protein)
+
+      if [ "$STATUS" -eq 200 ]; then
+        echo "Database protein already exists; skipping creation."
+      else
+        echo "Creating MarkLogic database 'protein'..."
+        curl --digest -u admin:${var.admin_password} \
+          -H "Content-Type: application/json" \
+          -X POST \
+          -d '{"database-name":"protein","forests":[{"forest-name":"protein-1"}]}' \
+          http://localhost:8002/manage/v2/databases
+      fi
+    EOT
+  }
+}
