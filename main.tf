@@ -75,17 +75,29 @@ resource "null_resource" "marklogic_protein_db" {
   provisioner "local-exec" {
     interpreter = ["/bin/bash", "-c"]
     command = <<-EOT
-      STATUS=$(curl --silent --output /dev/null --write-out "%%{http_code}" --digest -u admin:${var.admin_password} http://localhost:8002/manage/v2/databases/protein)
+      set -euo pipefail
 
-      if [ "$STATUS" -eq 200 ]; then
+      echo "Waiting for MarkLogic Manage API to become available..."
+      until curl --silent --digest -u admin:${var.admin_password} \
+        http://localhost:8002/manage/v2/databases?format=json >/dev/null 2>&1; do
+        sleep 5
+      done
+
+      STATUS=$(curl --silent --output /dev/null --write-out "%%{http_code}" \
+        --digest -u admin:${var.admin_password} \
+        http://localhost:8002/manage/v2/databases/protein?format=json || true)
+
+      if [[ "$STATUS" == "200" ]]; then
         echo "Database protein already exists; skipping creation."
       else
         echo "Creating MarkLogic database 'protein'..."
-        curl --digest -u admin:${var.admin_password} \
+        curl --silent --show-error --digest -u admin:${var.admin_password} \
           -H "Content-Type: application/json" \
+          -H "Accept: application/json" \
           -X POST \
           -d '{"database-name":"protein","forests":[{"forest-name":"protein-1"}]}' \
           http://localhost:8002/manage/v2/databases
+        echo
       fi
     EOT
   }
