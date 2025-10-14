@@ -1,4 +1,4 @@
-xml_directory = "./data/xml"
+xml_directory = "./input/xml"
 
 [marklogic]
     host = "localhost"
