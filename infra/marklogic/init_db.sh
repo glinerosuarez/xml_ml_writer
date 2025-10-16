@@ -18,19 +18,19 @@ FOREST_NAME="${DB_NAME}-1"
 MGMT_URL="http://${HOST}:8002/v1/rest-apis"
 
 # Check if the database already exists
-HTTP_STATUS=$(curl --silent --output /dev/null --write-out "%{http_code}" --digest -u "${USER}:${PASS}" \
-  "${MGMT_URL}/databases/${DB_NAME}?format=json" || echo 404)
+HTTP_STATUS=$(curl --silent --output /dev/null --write-out "%{http_code}" \
+    --digest -u "${USER}:${PASS}" \
+    "${MGMT_URL}/databases/${DB_NAME}?format=json" || echo 404)
 if [ "$HTTP_STATUS" -eq 200 ]; then
-  echo "Database '$DB_NAME' already exists"
-  exit 0
+    echo "Database '$DB_NAME' already exists"
+else
+    echo "Creating database '$DB_NAME'..."
+    curl --silent --show-error -X POST --digest -u "${USER}:${PASS}" \
+        -H "Content-Type:application/json" \
+        -d '{"rest-api":{ "name":"'"${SERVER_NAME}"'","port":"'"${PORT}"'","database":"'"${DB_NAME}"'" }}' \
+        "${MGMT_URL}"
+    echo "Database '$DB_NAME' created"
 fi
-
-# Create the database by passing parameters in the query string
- echo "Creating database '$DB_NAME'..."
- curl -v -X POST  --digest -u admin:admin \
-   --header "Content-Type:application/json" \
-   -d '{"rest-api": { "name": "'"${SERVER_NAME}"'", "port": "'"${PORT}"'", "database": "'"${DB_NAME}"'" } }' \
-   $MGMT_URL
 
 # Create a new role 'reader' via Manage API
 ROLE_URL="http://${HOST}:8002/manage/v2/roles"
