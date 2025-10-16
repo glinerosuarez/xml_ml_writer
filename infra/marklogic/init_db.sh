@@ -16,7 +16,7 @@ PASS="$6"
 
 FOREST_NAME="${DB_NAME}-1"
 MGMT_URL="http://${HOST}:8002/v1/rest-apis"
-DB_URL="http://${HOST}:${PORT}/manage/v2/databases/${DB_NAME}"
+DB_URL="http://${HOST}:8002/manage/v2/databases/${DB_NAME}"
 
 # Check if the database already exists
 HTTP_STATUS=$(curl --silent --output /dev/null --write-out "%{http_code}" \
