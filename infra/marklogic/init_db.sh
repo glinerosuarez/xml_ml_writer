@@ -24,13 +24,13 @@ if [ "$HTTP_STATUS" -eq 200 ]; then
 fi
 
 # Create the database by passing parameters in the query string
-echo "Creating database '$DB_NAME' with forest '$FOREST_NAME'..."
-if curl --silent --show-error --fail --digest -u "${USER}:${PASS}" \
-     -X POST "${MGMT_URL}/databases?database-name=${DB_NAME}&forest=${FOREST_NAME}"; then
-  echo "Database '$DB_NAME' created successfully."
-else
-  echo "Error: failed to create database '$DB_NAME' via Manage API." >&2
-  exit 1
-fi
+#echo "Creating database '$DB_NAME' with forest '$FOREST_NAME'..."
+#if curl --silent --show-error --fail --digest -u "${USER}:${PASS}" \
+#     -X POST "${MGMT_URL}/databases?database-name=${DB_NAME}&forest=${FOREST_NAME}"; then
+#  echo "Database '$DB_NAME' created successfully."
+#else
+#  echo "Error: failed to create database '$DB_NAME' via Manage API." >&2
+#  exit 1
+#fi
 
-echo "Request to create database '$DB_NAME' submitted"
+#echo "Request to create database '$DB_NAME' submitted"
