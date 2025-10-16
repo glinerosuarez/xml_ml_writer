@@ -1,18 +1,19 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Usage: init_db.sh <host> <new-db-port> <server-name> <username> <password>
-if [ "$#" -lt 5 ]; then
-  echo "Usage: $0 <host> <new-db-port> <server-name> <username> <password>"
+# Usage: init_db.sh <host> <new-db-port> <server-name> <db-name> <username> <password>
+if [ "$#" -lt 6 ]; then
+  echo "Usage: $0 <host> <new-db-port> <server-name> <db-name> <username> <password>"
   exit 1
 fi
 
 HOST="$1"
 PORT="$2"
 SERVER_NAME="$3"
-USER="$4"
-PASS="$5"
-DB_NAME="protein"
+DB_NAME="$4"
+USER="$5"
+PASS="$6"
+
 FOREST_NAME="${DB_NAME}-1"
 MGMT_URL="http://${HOST}:8002/v1/rest-apis"
 
