@@ -24,6 +24,13 @@ if [ "$HTTP_STATUS" -eq 200 ]; then
 fi
 
 # Create the database by passing parameters in the query string
+echo "Creating database '$DB_NAME'..."
+curl -v -X POST  --digest -u admin:admin \
+  --header "Content-Type:application/json" \
+  -d '{"rest-api": { "name": "ProteinServer", "port": "8011", "database": "protein" } }' \
+  'http://localhost:8002/v1/rest-apis'
+
+# Create the database by passing parameters in the query string
 #echo "Creating database '$DB_NAME' with forest '$FOREST_NAME'..."
 #if curl --silent --show-error --fail --digest -u "${USER}:${PASS}" \
 #     -X POST "${MGMT_URL}/databases?database-name=${DB_NAME}&forest=${FOREST_NAME}"; then
