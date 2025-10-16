@@ -25,13 +25,21 @@ fi
 
 # Create the database with its forest
  echo "Creating database '$DB_NAME' with forest '$FOREST_NAME'..."
+JSON_PAYLOAD=$(cat <<EOF
+{
+  "database-name": "${DB_NAME}",
+  "forest": [{"forest-name": "${FOREST_NAME}"}]
+}
+EOF
+)
 HTTP_RESPONSE=$(curl --silent --show-error --digest -u "${USER}:${PASS}" \
   -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
   -X POST \
-  -d '{"database-name":"'"${DB_NAME}"'","forests":[{"forest-name":"'"${FOREST_NAME}"'"}]}' \
+  -d "$JSON_PAYLOAD" \
   -w "%{http_code}" \
   --output /dev/null \
-  "${MGMT_URL}/databases")
+  "${MGMT_URL}/databases?format=json")
 if [[ "$HTTP_RESPONSE" -ge 200 && "$HTTP_RESPONSE" -lt 300 ]]; then
   echo "Database '$DB_NAME' created successfully (HTTP $HTTP_RESPONSE)."
 else
