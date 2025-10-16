@@ -19,9 +19,14 @@ MGMT_URL="http://${HOST}:8002/v1/rest-apis"
 DB_URL="http://${HOST}:8002/manage/v2/databases/${DB_NAME}"
 
 # Check if the database already exists
-HTTP_STATUS=$(curl --silent --output /dev/null --write-out "%{http_code}" \
-    --digest -u "${USER}:${PASS}" \
-    "${DB_URL}?format=json" || echo 404)
+get_http_status() {
+    local url="$1"
+    curl --silent --output /dev/null --write-out "%{http_code}" \
+        --digest -u "${USER}:${PASS}" \
+        "$url" || echo 404
+}
+
+HTTP_STATUS=$(get_http_status "${DB_URL}?format=json")
 if [ "$HTTP_STATUS" -eq 200 ]; then
     echo "Database '$DB_NAME' already exists"
 else
