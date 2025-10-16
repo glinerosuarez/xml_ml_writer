@@ -16,11 +16,12 @@ PASS="$6"
 
 FOREST_NAME="${DB_NAME}-1"
 MGMT_URL="http://${HOST}:8002/v1/rest-apis"
+DB_URL="http://${HOST}:${PORT}/manage/v2/databases/${DB_NAME}"
 
 # Check if the database already exists
 HTTP_STATUS=$(curl --silent --output /dev/null --write-out "%{http_code}" \
     --digest -u "${USER}:${PASS}" \
-    "${MGMT_URL}/databases/${DB_NAME}?format=json" || echo 404)
+    "${DB_URL}?format=json" || echo 404)
 if [ "$HTTP_STATUS" -eq 200 ]; then
     echo "Database '$DB_NAME' already exists"
 else
