@@ -1,19 +1,20 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Usage: init_db.sh <host> <port> <username> <password>
-if [ "$#" -lt 4 ]; then
-  echo "Usage: $0 <host> <port> <username> <password>"
+# Usage: init_db.sh <host> <new-db-port> <server-name> <username> <password>
+if [ "$#" -lt 5 ]; then
+  echo "Usage: $0 <host> <new-db-port> <server-name> <username> <password>"
   exit 1
 fi
 
 HOST="$1"
 PORT="$2"
-USER="$3"
-PASS="$4"
+SERVER_NAME="$3"
+USER="$4"
+PASS="$5"
 DB_NAME="protein"
 FOREST_NAME="${DB_NAME}-1"
-MGMT_URL="http://${HOST}:${PORT}/manage/v2"
+MGMT_URL="http://${HOST}:8002/v1/rest-apis"
 
 # Check if the database already exists
 HTTP_STATUS=$(curl --silent --output /dev/null --write-out "%{http_code}" --digest -u "${USER}:${PASS}" \
@@ -24,20 +25,22 @@ if [ "$HTTP_STATUS" -eq 200 ]; then
 fi
 
 # Create the database by passing parameters in the query string
-echo "Creating database '$DB_NAME'..."
-curl -v -X POST  --digest -u admin:admin \
-  --header "Content-Type:application/json" \
-  -d '{"rest-api": { "name": "ProteinServer", "port": "8011", "database": "protein" } }' \
-  'http://localhost:8002/v1/rest-apis'
+ echo "Creating database '$DB_NAME'..."
+ curl -v -X POST  --digest -u admin:admin \
+   --header "Content-Type:application/json" \
+   -d '{"rest-api": { "name": "'"${SERVER_NAME}"'", "port": "'"${PORT}"'", "database": "'"${DB_NAME}"'" } }' \
+   $MGMT_URL
 
-# Create the database by passing parameters in the query string
-#echo "Creating database '$DB_NAME' with forest '$FOREST_NAME'..."
-#if curl --silent --show-error --fail --digest -u "${USER}:${PASS}" \
-#     -X POST "${MGMT_URL}/databases?database-name=${DB_NAME}&forest=${FOREST_NAME}"; then
-#  echo "Database '$DB_NAME' created successfully."
-#else
-#  echo "Error: failed to create database '$DB_NAME' via Manage API." >&2
-#  exit 1
-#fi
-
-#echo "Request to create database '$DB_NAME' submitted"
+# Create a new role 'reader' via Manage API
+ROLE_URL="http://${HOST}:${PORT}/manage/v2/roles"
+if curl --silent --digest -u "${USER}:${PASS}" "${ROLE_URL}/reader?format=json" --output /dev/null; then
+  echo "Role 'reader' already exists"
+else
+  echo "Creating role 'reader'..."
+  curl --silent --show-error --digest -u "${USER}:${PASS}" \
+    -H "Content-Type: application/json" \
+    -X POST \
+    -d '{"role-name":"reader"}' \
+    "${ROLE_URL}?format=json"
+  echo "Role 'reader' created"
+fi
