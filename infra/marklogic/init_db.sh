@@ -33,15 +33,12 @@ fi
    $MGMT_URL
 
 # Create a new role 'reader' via Manage API
-ROLE_URL="http://${HOST}:${PORT}/manage/v2/roles"
+ROLE_URL="http://${HOST}:8002/manage/v2/roles"
 if curl --silent --digest -u "${USER}:${PASS}" "${ROLE_URL}/reader?format=json" --output /dev/null; then
   echo "Role 'reader' already exists"
 else
   echo "Creating role 'reader'..."
-  curl --silent --show-error --digest -u "${USER}:${PASS}" \
-    -H "Content-Type: application/json" \
-    -X POST \
-    -d '{"role-name":"reader"}' \
-    "${ROLE_URL}?format=json"
+  curl -X POST -i --digest -u "${USER}:${PASS}" -H "Content-Type:application/xml" \
+    -d @roles/reader.xml $ROLE_URL
   echo "Role 'reader' created"
 fi

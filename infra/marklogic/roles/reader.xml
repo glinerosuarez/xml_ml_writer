@@ -1,0 +1,7 @@
+<role-properties xmlns="http://marklogic.com/manage/role/properties">
+  <role-name>reader</role-name>
+  <description>for read only permissions</description>
+  <roles>
+    <role>xinclude</role>
+  </roles>
+</role-properties>
