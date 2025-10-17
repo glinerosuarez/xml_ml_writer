@@ -39,13 +39,13 @@ else
 fi
 
 # Create a new role 'reader' via Manage API
-ROLE_URL="http://${HOST}:8002/manage/v2/roles/reader"
-ROLE_HTTP_STATUS=$(get_http_status "${ROLE_URL}?format=json")
+ROLES_URL="http://${HOST}:8002/manage/v2/roles"
+ROLE_HTTP_STATUS=$(get_http_status "${ROLES_URL}/reader?format=json")
 if [ "$ROLE_HTTP_STATUS" -eq 200 ]; then
   echo "Role 'reader' already exists"
 else
   echo "Creating role 'reader'..."
   curl -X POST -i --digest -u "${USER}:${PASS}" -H "Content-Type:application/xml" \
-    -d @infra/marklogic/roles/reader.xml $ROLE_URL
+    -d @infra/marklogic/roles/reader.xml $ROLES_URL
   echo "Role 'reader' created"
 fi
