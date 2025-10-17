@@ -46,6 +46,6 @@ if [ "$ROLE_HTTP_STATUS" -eq 200 ]; then
 else
   echo "Creating role 'reader'..."
   curl -X POST -i --digest -u "${USER}:${PASS}" -H "Content-Type:application/xml" \
-    -d @roles/reader.xml $ROLE_URL
+    -d @infra/marklogic/roles/reader.xml $ROLE_URL
   echo "Role 'reader' created"
 fi
