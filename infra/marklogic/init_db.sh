@@ -42,6 +42,18 @@ create_role() {
         
         if [ "$ROLE_HTTP_STATUS" -eq 201 ]; then
             echo "Role '${role_name}' created"
+            # update role with permissions
+            PERM_HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X PUT --digest -u "${USER}:${PASS}" \
+                -H "Content-Type:application/xml" \
+                -d @infra/marklogic/roles/"${role_name}"_permissions.xml \
+                "${ROLES_URL}/${role_name}/properties")
+            if [ "$PERM_HTTP_STATUS" -eq 200 ]; then
+                echo "Permissions for role '${role_name}' updated"
+            else
+                echo "Failed to update permissions for role '${role_name}'"
+                echo "HTTP Status: $PERM_HTTP_STATUS"
+                exit 1
+            fi
         else
             echo "Failed to create role '${role_name}'"
             echo "HTTP Status: $ROLE_HTTP_STATUS"
