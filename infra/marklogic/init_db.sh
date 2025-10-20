@@ -26,6 +26,14 @@ get_http_status() {
         "$url" || echo 404
 }
 
+# function to create a role via Manage API
+create_role() {
+    local role_name="$1"
+    ROLES_URL="http://${HOST}:8002/manage/v2/roles"
+    curl -X POST -i --digest -u "${USER}:${PASS}" -H "Content-Type:application/xml" \
+        -d @infra/marklogic/roles/"${role_name}".xml "$ROLES_URL"
+}
+
 HTTP_STATUS=$(get_http_status "${DB_URL}?format=json")
 if [ "$HTTP_STATUS" -eq 200 ]; then
     echo "Database '$DB_NAME' already exists"
@@ -39,13 +47,21 @@ else
 fi
 
 # Create a new role 'reader' via Manage API
-ROLES_URL="http://${HOST}:8002/manage/v2/roles"
 ROLE_HTTP_STATUS=$(get_http_status "${ROLES_URL}/reader?format=json")
 if [ "$ROLE_HTTP_STATUS" -eq 200 ]; then
   echo "Role 'reader' already exists"
 else
   echo "Creating role 'reader'..."
-  curl -X POST -i --digest -u "${USER}:${PASS}" -H "Content-Type:application/xml" \
-    -d @infra/marklogic/roles/reader.xml $ROLES_URL
+  create_role "reader"
   echo "Role 'reader' created"
+fi
+
+# Create a new role 'protein_loader' via Manage API
+PROTEIN_LOADER_HTTP_STATUS=$(get_http_status "${ROLES_URL}/protein_loader?format=json")
+if [ "$PROTEIN_LOADER_HTTP_STATUS" -eq 200 ]; then
+  echo "Role 'protein_loader' already exists"
+else
+  echo "Creating role 'protein_loader'..."
+  create_role "protein_loader"
+  echo "Role 'protein_loader' created"
 fi
