@@ -1,27 +1,9 @@
-<role-properties xmlns="http://marklogic.com/manage">
+<role-properties xmlns="http://marklogic.com/manage/role/properties">
   <role-name>protein_analyst</role-name>
   <description>protein analyst role</description>
   <roles>
     <role>reader</role>
   </roles>
-  <permissions>
-    <permission>
-      <role-name>protein_analyst</role-name>
-      <capability>insert</capability>
-    </permission>
-    <permission>
-      <role-name>protein_analyst</role-name>
-      <capability>update</capability>
-    </permission>
-    <permission>
-      <role-name>protein_analyst</role-name>
-      <capability>read</capability>
-    </permission>
-    <permission>
-      <role-name>protein_analyst</role-name>
-      <capability>execute</capability>
-    </permission>
-  </permissions>
   <privileges>
     <privilege>
       <privilege-name>create-trigger</privilege-name>
