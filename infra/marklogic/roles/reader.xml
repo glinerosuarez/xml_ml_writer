@@ -1,19 +1,9 @@
-<role-properties xmlns="http://marklogic.com/manage">
+<role-properties xmlns="http://marklogic.com/manage/role/properties">
   <role-name>reader</role-name>
   <description>for read only permission</description>
   <roles>
     <role>xinclude</role>
   </roles>
-  <permissions>
-    <permission>
-      <role-name>reader</role-name>
-      <capability>read</capability>
-    </permission>
-    <permission>
-      <role-name>reader</role-name>
-      <capability>execute</capability>
-    </permission>
-  </permissions>
   <privileges>
     <privilege>
       <privilege-name>xdmp:spawn-modules-change</privilege-name>
