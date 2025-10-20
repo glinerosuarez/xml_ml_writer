@@ -1,0 +1,12 @@
+<role-properties xmlns="http://marklogic.com/manage/role/properties">
+  <permissions>
+    <permission>
+      <role-name>reader</role-name>
+      <capability>read</capability>
+    </permission>
+    <permission>
+      <role-name>reader</role-name>
+      <capability>execute</capability>
+    </permission>
+  </permissions>
+</role-properties>

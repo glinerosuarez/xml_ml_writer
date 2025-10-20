@@ -57,7 +57,7 @@ resource "docker_container" "marklogic" {
   }
 
   healthcheck {
-    test     = ["CMD", "curl", "-f", "http://localhost:8001/admin/v1/timestamp"]
+    test     = ["CMD", "curl", "-f", "--digest", "-u", "admin:${var.admin_password}", "http://localhost:8001/admin/v1/timestamp"]
     interval = "30s"
     timeout  = "5s"
     retries  = 10
