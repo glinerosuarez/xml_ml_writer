@@ -47,7 +47,7 @@ create_role() {
                 -H "Content-Type:application/xml" \
                 -d @infra/marklogic/roles/"${role_name}"_permissions.xml \
                 "${ROLES_URL}/${role_name}/properties")
-            if [ "$PERM_HTTP_STATUS" -eq 200 ]; then
+            if [ "$PERM_HTTP_STATUS" -eq 204 ]; then
                 echo "Permissions for role '${role_name}' updated"
             else
                 echo "Failed to update permissions for role '${role_name}'"
