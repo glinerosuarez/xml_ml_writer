@@ -16,6 +16,7 @@ PASS="$6"
 
 FOREST_NAME="${DB_NAME}-1"
 MGMT_URL="http://${HOST}:8002/v1/rest-apis"
+ROLES_URL="http://${HOST}:8002/manage/v2/roles"
 DB_URL="http://${HOST}:8002/manage/v2/databases/${DB_NAME}"
 
 # Check if the database already exists
@@ -29,7 +30,6 @@ get_http_status() {
 # function to create a role via Manage API
 create_role() {
     local role_name="$1"
-    ROLES_URL="http://${HOST}:8002/manage/v2/roles"
     curl -X POST -i --digest -u "${USER}:${PASS}" -H "Content-Type:application/xml" \
         -d @infra/marklogic/roles/"${role_name}".xml "$ROLES_URL"
 }
