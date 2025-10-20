@@ -27,11 +27,24 @@ get_http_status() {
         "$url" || echo 404
 }
 
-# function to create a role via Manage API
+# function to create a role via Manage API, returns HTTP status
 create_role() {
     local role_name="$1"
-    curl -X POST -i --digest -u "${USER}:${PASS}" -H "Content-Type:application/xml" \
-        -d @infra/marklogic/roles/"${role_name}".xml "$ROLES_URL"
+    ROLE_HTTP_STATUS=$(get_http_status "${ROLES_URL}/${role_name}?format=json")
+    if [ "$ROLE_HTTP_STATUS" -eq 200 ]; then
+        echo "Role '${role_name}' already exists"
+    else
+        echo "Creating role '${role_name}'..."
+        ROLE_HTTP_STATUS=$(curl -X POST -i --digest -u "${USER}:${PASS}" -H "Content-Type:application/xml" \
+            -d @infra/marklogic/roles/"${role_name}".xml "$ROLES_URL" | grep HTTP | awk '{print $2}')
+        if [ "$ROLE_HTTP_STATUS" -eq 201 ]; then
+            echo "Role '${role_name}' created"
+        else
+            echo "Failed to create role '${role_name}'"
+            echo "HTTP Status: $ROLE_HTTP_STATUS"
+            exit 1
+        fi
+    fi
 }
 
 HTTP_STATUS=$(get_http_status "${DB_URL}?format=json")
@@ -47,21 +60,10 @@ else
 fi
 
 # Create a new role 'reader' via Manage API
-ROLE_HTTP_STATUS=$(get_http_status "${ROLES_URL}/reader?format=json")
-if [ "$ROLE_HTTP_STATUS" -eq 200 ]; then
-  echo "Role 'reader' already exists"
-else
-  echo "Creating role 'reader'..."
-  create_role "reader"
-  echo "Role 'reader' created"
-fi
+create_role "reader"
+
+# Create a new role 'protein_analyst' via Manage API
+create_role "protein_analyst"
 
 # Create a new role 'protein_loader' via Manage API
-PROTEIN_LOADER_HTTP_STATUS=$(get_http_status "${ROLES_URL}/protein_loader?format=json")
-if [ "$PROTEIN_LOADER_HTTP_STATUS" -eq 200 ]; then
-  echo "Role 'protein_loader' already exists"
-else
-  echo "Creating role 'protein_loader'..."
-  create_role "protein_loader"
-  echo "Role 'protein_loader' created"
-fi
+create_role "protein_loader"
