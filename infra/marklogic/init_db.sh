@@ -35,8 +35,11 @@ create_role() {
         echo "Role '${role_name}' already exists"
     else
         echo "Creating role '${role_name}'..."
-        ROLE_HTTP_STATUS=$(curl -X POST -i --digest -u "${USER}:${PASS}" -H "Content-Type:application/xml" \
-            -d @infra/marklogic/roles/"${role_name}".xml "$ROLES_URL" | grep HTTP | awk '{print $2}')
+        ROLE_HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X POST --digest -u "${USER}:${PASS}" \
+            -H "Content-Type:application/xml" \
+            -d @infra/marklogic/roles/"${role_name}".xml \
+            "${ROLES_URL}")
+        
         if [ "$ROLE_HTTP_STATUS" -eq 201 ]; then
             echo "Role '${role_name}' created"
         else
