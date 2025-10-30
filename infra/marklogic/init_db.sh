@@ -77,8 +77,6 @@ fi
 # Create a new role 'reader' via Manage API
 create_role "reader"
 
-# Create a new role 'protein_analyst' via Manage API
-create_role "protein_analyst"
-
-# Create a new role 'protein_loader' via Manage API
-create_role "protein_loader"
+# Create analyst and loader roles for this database (e.g. protein_analyst, protein_loader)
+create_role "${DB_NAME}_analyst"
+create_role "${DB_NAME}_loader"
