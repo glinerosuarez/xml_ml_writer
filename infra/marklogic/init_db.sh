@@ -74,9 +74,12 @@ else
     echo "Database '$DB_NAME' created"
 fi
 
-# Create a new role 'reader' via Manage API
+# Create new roles 'reader' and 'loader' via Manage API
 create_role "reader"
+create_role "loader"
 
 # Create analyst and loader roles for this database (e.g. protein_analyst, protein_loader)
 create_role "${DB_NAME}_analyst"
 create_role "${DB_NAME}_loader"
+
+# TODO: replace this with ml-gradle
