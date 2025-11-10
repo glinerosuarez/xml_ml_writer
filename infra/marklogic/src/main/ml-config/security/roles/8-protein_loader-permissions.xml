@@ -1,19 +1,20 @@
-<role-properties xmlns="http://marklogic.com/manage/role/properties">
+<role-properties xmlns="http://marklogic.com/manage">
+  <role-name>protein_loader</role-name>
   <permissions>
     <permission>
-      <role-name>loader</role-name>
+      <role-name>protein_loader</role-name>
       <capability>insert</capability>
     </permission>
     <permission>
-      <role-name>loader</role-name>
+      <role-name>protein_loader</role-name>
       <capability>update</capability>
     </permission>
     <permission>
-      <role-name>reader</role-name>
+      <role-name>protein_loader</role-name>
       <capability>read</capability>
     </permission>
     <permission>
-      <role-name>reader</role-name>
+      <role-name>protein_loader</role-name>
       <capability>execute</capability>
     </permission>
   </permissions>

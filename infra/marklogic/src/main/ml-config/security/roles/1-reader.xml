@@ -1,4 +1,4 @@
-<role-properties xmlns="http://marklogic.com/manage/role/properties">
+<role-properties xmlns="http://marklogic.com/manage">
   <role-name>reader</role-name>
   <description>for read only permission</description>
   <roles>
