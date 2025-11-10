@@ -1,4 +1,5 @@
-<role-properties xmlns="http://marklogic.com/manage/role/properties">
+<role-properties xmlns="http://marklogic.com/manage">
+  <role-name>loader</role-name>
   <permissions>
     <permission>
       <role-name>loader</role-name>

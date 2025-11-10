@@ -1,4 +1,4 @@
-<role-properties xmlns="http://marklogic.com/manage/role/properties">
+<role-properties xmlns="http://marklogic.com/manage">
   <role-name>protein_analyst</role-name>
   <description>protein analyst role</description>
   <roles>
